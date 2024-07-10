@@ -19,6 +19,7 @@ const Game = () => {
   const [winChance, setWinChance] = useState(50);
   const [rollId, setRollId] = useState("");
   const [betHistory, setBetHistory] = useState([]);
+  const [currentUser, setCurrentUser] = useState("Player"); // Simulating a logged-in user
 
   useEffect(() => {
     generateNewServerSeed();
@@ -67,7 +68,7 @@ const Game = () => {
   const saveWagerDetails = (rollId, wager, winChance, result, win, payout) => {
     const wagerDetails = {
       rollId,
-      username: "Player", // In a real app, this would be the actual username
+      username: currentUser,
       wager,
       winChance,
       result,
@@ -150,7 +151,7 @@ const Game = () => {
           </Button>
         </CardContent>
       </Card>
-      <BetFeed bets={betHistory} />
+      <BetFeed bets={betHistory} currentUser={currentUser} />
     </div>
   );
 };
