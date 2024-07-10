@@ -9,10 +9,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { CircleUser, Menu, Package2 } from "lucide-react";
+import { CircleUser, Menu, Package2, Home, DollarSign, FileCheck } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
-import { navItems } from "../App";
 import { useState, useEffect } from "react";
+
+const navItems = [
+  { title: "Home", to: "/", icon: <Home className="h-4 w-4" /> },
+  { title: "Game", to: "/game", icon: <DollarSign className="h-4 w-4" /> },
+  { title: "Verification", to: "/verification", icon: <FileCheck className="h-4 w-4" /> },
+];
 
 const Layout = () => {
   const [balance, setBalance] = useState(1000); // Initial balance
@@ -20,7 +25,7 @@ const Layout = () => {
   useEffect(() => {
     window.userBalance = balance;
     window.updateBalance = setBalance;
-  }, []);
+  }, [balance]);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -46,7 +51,7 @@ const DesktopNav = () => (
       className="flex items-center gap-2 text-lg font-semibold md:text-base"
     >
       <Package2 className="h-6 w-6" />
-      <span className="sr-only">Acme Inc</span>
+      <span className="">Dice Game</span>
     </NavItem>
     {navItems.map((item) => (
       <NavItem key={item.to} to={item.to}>
@@ -71,10 +76,11 @@ const MobileNav = () => (
           className="flex items-center gap-2 text-lg font-semibold"
         >
           <Package2 className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
+          <span className="">Dice Game</span>
         </NavItem>
         {navItems.map((item) => (
           <NavItem key={item.to} to={item.to}>
+            {item.icon}
             {item.title}
           </NavItem>
         ))}

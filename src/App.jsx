@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import Layout from "./layouts/default";
+import Layout from "./layouts/navbar";
 import Home from "./pages/Index";
 import Game from "./pages/Game";
 import Verification from "./pages/Verification";
