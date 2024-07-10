@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,21 +15,18 @@ const cryptocurrencies = [
 ];
 
 const Wallet = () => {
-  const [balances, setBalances] = useState({
-    BTC: 0,
-    ETH: 0,
-    LTC: 0,
-    DOGE: 0,
-    TRX: 0,
-  });
+  const [balances, setBalances] = useState({});
+  const [depositAddresses, setDepositAddresses] = useState({});
+  const [selectedCurrency, setSelectedCurrency] = useState("BTC");
 
-  const [depositAddresses, setDepositAddresses] = useState({
-    BTC: "",
-    ETH: "",
-    LTC: "",
-    DOGE: "",
-    TRX: "",
-  });
+  useEffect(() => {
+    // Generate random balances for each cryptocurrency
+    const randomBalances = {};
+    cryptocurrencies.forEach(crypto => {
+      randomBalances[crypto.name] = (Math.random() * 10).toFixed(4);
+    });
+    setBalances(randomBalances);
+  }, []);
 
   const generateDepositAddress = (currency) => {
     // In a real application, this would call an API to generate a unique address
@@ -37,10 +34,14 @@ const Wallet = () => {
     setDepositAddresses((prev) => ({ ...prev, [currency]: mockAddress }));
   };
 
+  const handleCurrencyChange = (currency) => {
+    setSelectedCurrency(currency);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Wallet</h1>
-      <Tabs defaultValue="BTC" className="w-full">
+      <Tabs value={selectedCurrency} onValueChange={handleCurrencyChange} className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           {cryptocurrencies.map((crypto) => (
             <TabsTrigger key={crypto.name} value={crypto.name} className="flex items-center gap-2">
@@ -61,14 +62,14 @@ const Wallet = () => {
               <CardContent className="space-y-4">
                 <div>
                   <Label>Balance</Label>
-                  <p className="text-2xl font-bold">{balances[crypto.name]} {crypto.name}</p>
+                  <p className="text-2xl font-bold">{balances[crypto.name] || "0.0000"} {crypto.name}</p>
                 </div>
                 <div>
                   <Label htmlFor={`${crypto.name}-address`}>Deposit Address</Label>
                   <div className="flex gap-2">
                     <Input
                       id={`${crypto.name}-address`}
-                      value={depositAddresses[crypto.name]}
+                      value={depositAddresses[crypto.name] || ""}
                       readOnly
                       placeholder="Generate an address to deposit"
                     />
