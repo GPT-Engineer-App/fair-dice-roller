@@ -7,6 +7,7 @@ import Home from "./pages/Index";
 import Game from "./pages/Game";
 import Verification from "./pages/Verification";
 import Admin from "./pages/Admin";
+import Wallet from "./pages/Wallet";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => {
               <Route path="game" element={<Game />} />
               <Route path="verification" element={<Verification />} />
               <Route path="admin" element={<Admin />} />
+              <Route path="wallet" element={<Wallet />} />
             </Route>
           </Routes>
         </Router>
