@@ -8,6 +8,15 @@ import { Slider } from "@/components/ui/slider";
 import { generateServerSeed, hashServerSeed, generateDiceRoll } from "@/lib/provablyFair";
 import { v4 as uuidv4 } from 'uuid';
 import BetFeed from "@/components/BetFeed";
+import { Bitcoin, Coins } from "lucide-react";
+
+const cryptocurrencies = {
+  BTC: <Bitcoin className="h-5 w-5" />,
+  ETH: <Coins className="h-5 w-5" />,
+  LTC: <Coins className="h-5 w-5" />,
+  DOGE: <Coins className="h-5 w-5" />,
+  TRX: <Coins className="h-5 w-5" />,
+};
 
 const Game = () => {
   const navigate = useNavigate();
@@ -20,11 +29,21 @@ const Game = () => {
   const [rollId, setRollId] = useState("");
   const [betHistory, setBetHistory] = useState([]);
   const [currentUser, setCurrentUser] = useState("Player"); // Simulating a logged-in user
+  const [selectedCurrency, setSelectedCurrency] = useState("BTC");
+  const [balance, setBalance] = useState(0);
 
   useEffect(() => {
     generateNewServerSeed();
     loadBetHistory();
+    const storedCurrency = localStorage.getItem('selectedCurrency') || "BTC";
+    setSelectedCurrency(storedCurrency);
+    updateBalance(storedCurrency);
   }, []);
+
+  const updateBalance = (currency) => {
+    const balances = JSON.parse(localStorage.getItem('cryptoBalances')) || {};
+    setBalance(parseFloat(balances[currency] || 0));
+  };
 
   const generateNewServerSeed = () => {
     const newServerSeed = generateServerSeed();
@@ -39,7 +58,7 @@ const Game = () => {
   };
 
   const handleRollDice = () => {
-    if (wager > window.userBalance) {
+    if (wager > balance) {
       alert("Insufficient balance");
       return;
     }
@@ -54,8 +73,9 @@ const Game = () => {
     const win = (result / 6) * 100 <= winChance;
     const payout = win ? (wager * (100 / winChance)) : 0;
     
-    window.userBalance = window.userBalance - wager + payout;
-    window.updateBalance(window.userBalance);
+    const newBalance = balance - wager + payout;
+    setBalance(newBalance);
+    updateStoredBalance(newBalance);
 
     // Save wager details
     const newBet = saveWagerDetails(newRollId, wager, winChance, result, win, payout);
@@ -63,6 +83,16 @@ const Game = () => {
 
     // Generate new server seed for the next roll
     generateNewServerSeed();
+  };
+
+  const updateStoredBalance = (newBalance) => {
+    const balances = JSON.parse(localStorage.getItem('cryptoBalances')) || {};
+    balances[selectedCurrency] = newBalance.toFixed(4);
+    localStorage.setItem('cryptoBalances', JSON.stringify(balances));
+    // Dispatch event to update navbar balance
+    window.dispatchEvent(new CustomEvent('balanceUpdate', { 
+      detail: { balance: newBalance, currency: selectedCurrency } 
+    }));
   };
 
   const saveWagerDetails = (rollId, wager, winChance, result, win, payout) => {
@@ -100,6 +130,13 @@ const Game = () => {
           <CardTitle className="text-2xl text-center">Provably Fair Dice Game</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>Balance:</Label>
+            <div className="flex items-center">
+              {cryptocurrencies[selectedCurrency]}
+              <span className="ml-2 font-bold">{balance.toFixed(4)} {selectedCurrency}</span>
+            </div>
+          </div>
           <div>
             <Label htmlFor="wager">Wager Amount:</Label>
             <Input
