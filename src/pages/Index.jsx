@@ -17,7 +17,16 @@ const Home = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-center">
-            Welcome to the Provably Fair Dice Game! Click 'Start Game' to begin.
+            Welcome to the Provably Fair Dice Game! Here's how to play:
+          </p>
+          <ol className="list-decimal list-inside space-y-2">
+            <li>Set your wager amount</li>
+            <li>Choose your winning chance</li>
+            <li>Enter a client seed (or use the default)</li>
+            <li>Click "Roll Dice" to play</li>
+          </ol>
+          <p className="text-sm">
+            Our game uses a provably fair system to ensure transparency. The server seed is hashed and shown before each game, and you can verify the fairness after the game ends.
           </p>
           <Button onClick={handleStartGame} className="w-full">
             Start Game
