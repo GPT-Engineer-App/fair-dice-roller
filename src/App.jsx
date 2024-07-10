@@ -9,6 +9,7 @@ import Verification from "./pages/Verification";
 import Admin from "./pages/Admin";
 import Wallet from "./pages/Wallet";
 import Register from "./pages/Register";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => {
               <Route path="admin" element={<Admin />} />
               <Route path="wallet" element={<Wallet />} />
               <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
             </Route>
           </Routes>
         </Router>

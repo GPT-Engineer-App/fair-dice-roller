@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { CircleUser, Menu, Package2, Home, DollarSign, FileCheck, Settings, Wallet, UserPlus } from "lucide-react";
+import { CircleUser, Menu, Package2, Home, DollarSign, FileCheck, Settings, Wallet, UserPlus, LogIn } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -20,6 +20,7 @@ const navItems = [
   { title: "Admin", to: "/admin", icon: <Settings className="h-4 w-4" /> },
   { title: "Wallet", to: "/wallet", icon: <Wallet className="h-4 w-4" /> },
   { title: "Register", to: "/register", icon: <UserPlus className="h-4 w-4" /> },
+  { title: "Login", to: "/login", icon: <LogIn className="h-4 w-4" /> },
 ];
 
 const Layout = () => {
