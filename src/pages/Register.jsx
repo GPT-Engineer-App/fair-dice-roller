@@ -11,9 +11,23 @@ import { AlertCircle, CheckCircle } from "lucide-react";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+
+  const checkUsernameExists = async (username) => {
+    const { data, error } = await supabase
+      .from('Users')
+      .select('username')
+      .eq('username', username);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length > 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +35,13 @@ const Register = () => {
     setSuccess(false);
 
     try {
+      const usernameExists = await checkUsernameExists(username);
+
+      if (usernameExists) {
+        setError("Username is already taken.");
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
@@ -28,6 +49,15 @@ const Register = () => {
 
       if (error) {
         throw error;
+      }
+
+      // Insert the new user with the username
+      const { error: insertError } = await supabase
+        .from('Users')
+        .insert([{ id: data.user.id, username: username }]);
+
+      if (insertError) {
+        throw insertError;
       }
 
       setSuccess(true);
@@ -65,6 +95,16 @@ const Register = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
