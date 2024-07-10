@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const Admin = () => {
   const [loggedInUsers, setLoggedInUsers] = useState(0);
   const [profitLossData, setProfitLossData] = useState([]);
   const [totalWagered, setTotalWagered] = useState(0);
   const [cashOutRequests, setCashOutRequests] = useState(0);
+  const [houseEdge, setHouseEdge] = useState(1); // Default house edge of 1%
 
   useEffect(() => {
     // Simulating data fetching
@@ -21,6 +25,19 @@ const Admin = () => {
     }));
     setProfitLossData(mockData);
   }, []);
+
+  const handleHouseEdgeChange = (e) => {
+    const newEdge = parseFloat(e.target.value);
+    if (!isNaN(newEdge) && newEdge >= 0 && newEdge <= 100) {
+      setHouseEdge(newEdge);
+    }
+  };
+
+  const updateHouseEdge = () => {
+    // Here you would typically update the house edge in your backend
+    console.log(`House edge updated to ${houseEdge}%`);
+    // You might want to show a success message to the admin
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -48,6 +65,26 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">{cashOutRequests}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>House Edge</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-2">
+              <Input
+                type="number"
+                value={houseEdge}
+                onChange={handleHouseEdgeChange}
+                min="0"
+                max="100"
+                step="0.1"
+                className="w-24"
+              />
+              <Label>%</Label>
+              <Button onClick={updateHouseEdge}>Update</Button>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -22,12 +22,23 @@ const navItems = [
 ];
 
 const Layout = () => {
-  const [balance, setBalance] = useState(1000); // Initial balance
+  const [balance, setBalance] = useState(1000);
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
 
   useEffect(() => {
-    window.userBalance = balance;
-    window.updateBalance = setBalance;
-  }, [balance]);
+    const handleBalanceUpdate = (event) => {
+      if (event.detail) {
+        setBalance(event.detail.balance);
+        setSelectedCurrency(event.detail.currency);
+      }
+    };
+
+    window.addEventListener('balanceUpdate', handleBalanceUpdate);
+
+    return () => {
+      window.removeEventListener('balanceUpdate', handleBalanceUpdate);
+    };
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -35,7 +46,7 @@ const Layout = () => {
         <DesktopNav />
         <MobileNav />
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium">Balance: ${balance.toFixed(2)}</span>
+          <span className="text-sm font-medium">Balance: {balance.toFixed(2)} {selectedCurrency}</span>
           <UserMenu />
         </div>
       </header>

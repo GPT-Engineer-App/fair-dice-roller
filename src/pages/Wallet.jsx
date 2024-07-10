@@ -28,6 +28,17 @@ const Wallet = () => {
     setBalances(randomBalances);
   }, []);
 
+  useEffect(() => {
+    // Update the balance in the navbar
+    const event = new CustomEvent('balanceUpdate', { 
+      detail: { 
+        balance: parseFloat(balances[selectedCurrency]), 
+        currency: selectedCurrency 
+      } 
+    });
+    window.dispatchEvent(event);
+  }, [selectedCurrency, balances]);
+
   const generateDepositAddress = (currency) => {
     // In a real application, this would call an API to generate a unique address
     const mockAddress = `${currency}${Math.random().toString(36).substring(2, 15)}`;
