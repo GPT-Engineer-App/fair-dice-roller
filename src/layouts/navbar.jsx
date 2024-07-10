@@ -12,13 +12,25 @@ import { cn } from "@/lib/utils";
 import { CircleUser, Menu, Package2 } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { navItems } from "../App";
+import { useState, useEffect } from "react";
 
 const Layout = () => {
+  const [balance, setBalance] = useState(1000); // Initial balance
+
+  useEffect(() => {
+    window.userBalance = balance;
+    window.updateBalance = setBalance;
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 justify-between">
         <DesktopNav />
         <MobileNav />
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium">Balance: ${balance.toFixed(2)}</span>
+          <UserMenu />
+        </div>
       </header>
       <main className="flex-grow overflow-auto">
         <Outlet />

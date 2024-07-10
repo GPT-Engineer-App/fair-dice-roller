@@ -13,7 +13,6 @@ const Game = () => {
   const [serverSeedHash, setServerSeedHash] = useState("");
   const [clientSeed, setClientSeed] = useState("");
   const [diceResult, setDiceResult] = useState(null);
-  const [balance, setBalance] = useState(1000); // Initial balance
   const [wager, setWager] = useState(10);
   const [winChance, setWinChance] = useState(50);
 
@@ -21,14 +20,11 @@ const Game = () => {
     const newServerSeed = generateServerSeed();
     setServerSeed(newServerSeed);
     setServerSeedHash(hashServerSeed(newServerSeed));
+    setClientSeed(generateServerSeed()); // Prefill client seed
   }, []);
 
   const handleRollDice = () => {
-    if (!clientSeed) {
-      alert("Please enter a client seed");
-      return;
-    }
-    if (wager > balance) {
+    if (wager > window.userBalance) {
       alert("Insufficient balance");
       return;
     }
@@ -39,7 +35,8 @@ const Game = () => {
     const win = (result / 6) * 100 <= winChance;
     const payout = win ? (wager * (100 / winChance)) : 0;
     
-    setBalance(prevBalance => prevBalance - wager + payout);
+    window.userBalance = window.userBalance - wager + payout;
+    window.updateBalance(window.userBalance);
   };
 
   const handleEndGame = () => {
@@ -53,9 +50,6 @@ const Game = () => {
           <CardTitle className="text-2xl text-center">Provably Fair Dice Game</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label>Balance: ${balance.toFixed(2)}</Label>
-          </div>
           <div>
             <Label htmlFor="wager">Wager Amount:</Label>
             <Input
@@ -83,7 +77,7 @@ const Game = () => {
             <Input id="serverSeedHash" value={serverSeedHash} readOnly />
           </div>
           <div>
-            <Label htmlFor="clientSeed">Enter your seed:</Label>
+            <Label htmlFor="clientSeed">Client Seed (optional):</Label>
             <Input
               id="clientSeed"
               value={clientSeed}
