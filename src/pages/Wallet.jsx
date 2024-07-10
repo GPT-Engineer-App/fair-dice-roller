@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bitcoin, Ethereum, Coins } from "lucide-react";
+import { Bitcoin, Coins } from "lucide-react";
 
 const cryptocurrencies = [
   { name: "BTC", icon: <Bitcoin className="h-6 w-6" /> },
-  { name: "ETH", icon: <Ethereum className="h-6 w-6" /> },
+  { name: "ETH", icon: <Coins className="h-6 w-6" /> },
   { name: "LTC", icon: <Coins className="h-6 w-6" /> },
   { name: "DOGE", icon: <Coins className="h-6 w-6" /> },
   { name: "TRX", icon: <Coins className="h-6 w-6" /> },
