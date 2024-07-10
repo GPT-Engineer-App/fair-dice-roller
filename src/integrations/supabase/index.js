@@ -25,6 +25,7 @@ const fromSupabase = async (query) => {
 |------------|-------------|--------|----------|
 | id         | int8        | number | true     |
 | created_at | timestamptz | string | true     |
+| username   | text        | string | true     |
 
 */
 
