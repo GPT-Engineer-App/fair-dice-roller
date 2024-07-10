@@ -6,6 +6,7 @@ import Layout from "./layouts/navbar";
 import Home from "./pages/Index";
 import Game from "./pages/Game";
 import Verification from "./pages/Verification";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => {
               <Route index element={<Home />} />
               <Route path="game" element={<Game />} />
               <Route path="verification" element={<Verification />} />
+              <Route path="admin" element={<Admin />} />
             </Route>
           </Routes>
         </Router>
