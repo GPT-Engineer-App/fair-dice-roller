@@ -22,14 +22,24 @@ const navItems = [
 ];
 
 const Layout = () => {
-  const [balance, setBalance] = useState(1000);
+  const [balance, setBalance] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
 
   useEffect(() => {
+    // Initialize balance from localStorage or set a default value
+    const storedBalance = localStorage.getItem('userBalance');
+    if (storedBalance) {
+      setBalance(parseFloat(storedBalance));
+    } else {
+      setBalance(1000); // Default balance
+      localStorage.setItem('userBalance', '1000');
+    }
+
     const handleBalanceUpdate = (event) => {
       if (event.detail) {
         setBalance(event.detail.balance);
         setSelectedCurrency(event.detail.currency);
+        localStorage.setItem('userBalance', event.detail.balance.toString());
       }
     };
 
@@ -39,6 +49,15 @@ const Layout = () => {
       window.removeEventListener('balanceUpdate', handleBalanceUpdate);
     };
   }, []);
+
+  // Expose the balance to the window object for other components to use
+  useEffect(() => {
+    window.userBalance = balance;
+    window.updateBalance = (newBalance) => {
+      setBalance(newBalance);
+      localStorage.setItem('userBalance', newBalance.toString());
+    };
+  }, [balance]);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
