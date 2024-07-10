@@ -19,11 +19,15 @@ const Game = () => {
   const [rollId, setRollId] = useState("");
 
   useEffect(() => {
+    generateNewServerSeed();
+  }, []);
+
+  const generateNewServerSeed = () => {
     const newServerSeed = generateServerSeed();
     setServerSeed(newServerSeed);
     setServerSeedHash(hashServerSeed(newServerSeed));
     setClientSeed(generateServerSeed()); // Prefill client seed
-  }, []);
+  };
 
   const handleRollDice = () => {
     if (wager > window.userBalance) {
@@ -46,6 +50,9 @@ const Game = () => {
 
     // Save wager details
     saveWagerDetails(newRollId, wager, winChance, result, win, payout);
+
+    // Generate new server seed for the next roll
+    generateNewServerSeed();
   };
 
   const saveWagerDetails = (rollId, wager, winChance, result, win, payout) => {
