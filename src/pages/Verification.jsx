@@ -7,7 +7,7 @@ import { hashServerSeed } from "@/lib/provablyFair";
 const Verification = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { serverSeed, serverSeedHash } = location.state || {};
+  const { serverSeed, serverSeedHash, rollId } = location.state || {};
 
   const handleNewGame = () => {
     navigate("/");
@@ -22,6 +22,12 @@ const Verification = () => {
           <CardTitle className="text-2xl text-center">Verification</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <Label>Roll ID:</Label>
+            <p className="text-sm bg-muted p-2 rounded break-all">
+              {rollId || "No roll ID available"}
+            </p>
+          </div>
           <div>
             <Label>Original Server Seed:</Label>
             <p className="text-sm bg-muted p-2 rounded break-all">

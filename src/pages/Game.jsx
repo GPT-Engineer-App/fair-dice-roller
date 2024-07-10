@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { generateServerSeed, hashServerSeed, generateDiceRoll } from "@/lib/provablyFair";
+import { v4 as uuidv4 } from 'uuid';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Game = () => {
   const [diceResult, setDiceResult] = useState(null);
   const [wager, setWager] = useState(10);
   const [winChance, setWinChance] = useState(50);
+  const [rollId, setRollId] = useState("");
 
   useEffect(() => {
     const newServerSeed = generateServerSeed();
@@ -31,16 +33,44 @@ const Game = () => {
     const result = generateDiceRoll(serverSeed, clientSeed);
     setDiceResult(result);
     
+    // Generate a unique roll ID
+    const newRollId = uuidv4();
+    setRollId(newRollId);
+
     // Determine win or loss
     const win = (result / 6) * 100 <= winChance;
     const payout = win ? (wager * (100 / winChance)) : 0;
     
     window.userBalance = window.userBalance - wager + payout;
     window.updateBalance(window.userBalance);
+
+    // Save wager details
+    saveWagerDetails(newRollId, wager, winChance, result, win, payout);
+  };
+
+  const saveWagerDetails = (rollId, wager, winChance, result, win, payout) => {
+    const wagerDetails = {
+      rollId,
+      wager,
+      winChance,
+      result,
+      win,
+      payout,
+      timestamp: new Date().toISOString()
+    };
+
+    // Retrieve existing wager history or initialize an empty array
+    const existingHistory = JSON.parse(localStorage.getItem('wagerHistory')) || [];
+    
+    // Add new wager details to the history
+    const updatedHistory = [...existingHistory, wagerDetails];
+    
+    // Save updated history back to localStorage
+    localStorage.setItem('wagerHistory', JSON.stringify(updatedHistory));
   };
 
   const handleEndGame = () => {
-    navigate("/verification", { state: { serverSeed, serverSeedHash } });
+    navigate("/verification", { state: { serverSeed, serverSeedHash, rollId } });
   };
 
   return (
@@ -93,6 +123,7 @@ const Game = () => {
               <Label>Dice Result:</Label>
               <p className="text-4xl font-bold">{diceResult}</p>
               <p>{(diceResult / 6) * 100 <= winChance ? "You won!" : "You lost."}</p>
+              <p className="text-sm mt-2">Roll ID: {rollId}</p>
             </div>
           )}
           <Button onClick={handleEndGame} className="w-full">
