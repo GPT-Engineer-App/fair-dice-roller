@@ -1,19 +1,13 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Home } from "lucide-react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import Layout from "./layouts/default"; // available: default, navbar, sidebar
-import Index from "./pages/Index.jsx";
-const queryClient = new QueryClient();
+import Layout from "./layouts/default";
+import Home from "./pages/Index";
+import Game from "./pages/Game";
+import Verification from "./pages/Verification";
 
-export const navItems = [
-  {
-    title: "Home", // Feel free to change this to your liking
-    to: "/",
-    icon: <Home className="h-4 w-4" />,
-  },
-];
+const queryClient = new QueryClient();
 
 const App = () => {
   return (
@@ -23,8 +17,9 @@ const App = () => {
         <Router>
           <Routes>
             <Route path="/" element={<Layout />}>
-              <Route index element={<Index />} />
-              {/* Add more routes here as needed */}
+              <Route index element={<Home />} />
+              <Route path="game" element={<Game />} />
+              <Route path="verification" element={<Verification />} />
             </Route>
           </Routes>
         </Router>
