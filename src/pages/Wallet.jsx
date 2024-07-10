@@ -20,12 +20,24 @@ const Wallet = () => {
   const [selectedCurrency, setSelectedCurrency] = useState("BTC");
 
   useEffect(() => {
-    // Generate random balances for each cryptocurrency
-    const randomBalances = {};
-    cryptocurrencies.forEach(crypto => {
-      randomBalances[crypto.name] = (Math.random() * 10).toFixed(4);
-    });
-    setBalances(randomBalances);
+    // Load balances from localStorage or generate random balances if not available
+    const storedBalances = JSON.parse(localStorage.getItem('cryptoBalances'));
+    if (storedBalances) {
+      setBalances(storedBalances);
+    } else {
+      const randomBalances = {};
+      cryptocurrencies.forEach(crypto => {
+        randomBalances[crypto.name] = (Math.random() * 10).toFixed(4);
+      });
+      setBalances(randomBalances);
+      localStorage.setItem('cryptoBalances', JSON.stringify(randomBalances));
+    }
+
+    // Set initial selected currency
+    const storedCurrency = localStorage.getItem('selectedCurrency');
+    if (storedCurrency) {
+      setSelectedCurrency(storedCurrency);
+    }
   }, []);
 
   useEffect(() => {
@@ -37,6 +49,10 @@ const Wallet = () => {
       } 
     });
     window.dispatchEvent(event);
+
+    // Update localStorage
+    localStorage.setItem('cryptoBalances', JSON.stringify(balances));
+    localStorage.setItem('selectedCurrency', selectedCurrency);
   }, [selectedCurrency, balances]);
 
   const generateDepositAddress = (currency) => {

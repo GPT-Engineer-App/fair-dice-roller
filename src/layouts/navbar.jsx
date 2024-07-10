@@ -23,16 +23,24 @@ const navItems = [
 
 const Layout = () => {
   const [balance, setBalance] = useState(0);
-  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [selectedCurrency, setSelectedCurrency] = useState("BTC");
 
   useEffect(() => {
     // Initialize balance from localStorage or set a default value
     const storedBalance = localStorage.getItem('userBalance');
-    if (storedBalance) {
+    const storedCurrency = localStorage.getItem('selectedCurrency');
+    if (storedBalance && storedCurrency) {
       setBalance(parseFloat(storedBalance));
+      setSelectedCurrency(storedCurrency);
     } else {
-      setBalance(1000); // Default balance
-      localStorage.setItem('userBalance', '1000');
+      // Fetch initial balance from the wallet
+      const initialBalances = JSON.parse(localStorage.getItem('cryptoBalances')) || {};
+      const initialCurrency = Object.keys(initialBalances)[0] || "BTC";
+      const initialBalance = initialBalances[initialCurrency] || 0;
+      setBalance(parseFloat(initialBalance));
+      setSelectedCurrency(initialCurrency);
+      localStorage.setItem('userBalance', initialBalance.toString());
+      localStorage.setItem('selectedCurrency', initialCurrency);
     }
 
     const handleBalanceUpdate = (event) => {
@@ -40,6 +48,7 @@ const Layout = () => {
         setBalance(event.detail.balance);
         setSelectedCurrency(event.detail.currency);
         localStorage.setItem('userBalance', event.detail.balance.toString());
+        localStorage.setItem('selectedCurrency', event.detail.currency);
       }
     };
 
@@ -53,11 +62,13 @@ const Layout = () => {
   // Expose the balance to the window object for other components to use
   useEffect(() => {
     window.userBalance = balance;
-    window.updateBalance = (newBalance) => {
+    window.updateBalance = (newBalance, currency) => {
       setBalance(newBalance);
+      setSelectedCurrency(currency);
       localStorage.setItem('userBalance', newBalance.toString());
+      localStorage.setItem('selectedCurrency', currency);
     };
-  }, [balance]);
+  }, [balance, selectedCurrency]);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -65,7 +76,7 @@ const Layout = () => {
         <DesktopNav />
         <MobileNav />
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium">Balance: {balance.toFixed(2)} {selectedCurrency}</span>
+          <span className="text-sm font-medium">Balance: {balance.toFixed(4)} {selectedCurrency}</span>
           <UserMenu />
         </div>
       </header>
