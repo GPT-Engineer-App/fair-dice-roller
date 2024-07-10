@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { generateServerSeed, hashServerSeed, generateDiceRoll } from "@/lib/provablyFair";
 
 const Game = () => {
@@ -12,6 +13,9 @@ const Game = () => {
   const [serverSeedHash, setServerSeedHash] = useState("");
   const [clientSeed, setClientSeed] = useState("");
   const [diceResult, setDiceResult] = useState(null);
+  const [balance, setBalance] = useState(1000); // Initial balance
+  const [wager, setWager] = useState(10);
+  const [winChance, setWinChance] = useState(50);
 
   useEffect(() => {
     const newServerSeed = generateServerSeed();
@@ -24,8 +28,18 @@ const Game = () => {
       alert("Please enter a client seed");
       return;
     }
+    if (wager > balance) {
+      alert("Insufficient balance");
+      return;
+    }
     const result = generateDiceRoll(serverSeed, clientSeed);
     setDiceResult(result);
+    
+    // Determine win or loss
+    const win = (result / 6) * 100 <= winChance;
+    const payout = win ? (wager * (100 / winChance)) : 0;
+    
+    setBalance(prevBalance => prevBalance - wager + payout);
   };
 
   const handleEndGame = () => {
@@ -39,6 +53,31 @@ const Game = () => {
           <CardTitle className="text-2xl text-center">Provably Fair Dice Game</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <Label>Balance: ${balance.toFixed(2)}</Label>
+          </div>
+          <div>
+            <Label htmlFor="wager">Wager Amount:</Label>
+            <Input
+              id="wager"
+              type="number"
+              value={wager}
+              onChange={(e) => setWager(Math.max(0, parseFloat(e.target.value)))}
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div>
+            <Label htmlFor="winChance">Win Chance: {winChance}%</Label>
+            <Slider
+              id="winChance"
+              min={1}
+              max={99}
+              step={1}
+              value={[winChance]}
+              onValueChange={(value) => setWinChance(value[0])}
+            />
+          </div>
           <div>
             <Label htmlFor="serverSeedHash">Server Seed Hash:</Label>
             <Input id="serverSeedHash" value={serverSeedHash} readOnly />
@@ -59,6 +98,7 @@ const Game = () => {
             <div className="text-center">
               <Label>Dice Result:</Label>
               <p className="text-4xl font-bold">{diceResult}</p>
+              <p>{(diceResult / 6) * 100 <= winChance ? "You won!" : "You lost."}</p>
             </div>
           )}
           <Button onClick={handleEndGame} className="w-full">
