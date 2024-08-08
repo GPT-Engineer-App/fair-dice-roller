@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,9 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const checkUsernameExists = async (username) => {
     const { data, error } = await supabase
@@ -33,6 +36,7 @@ const Register = () => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
+    setIsLoading(true);
 
     try {
       const usernameExists = await checkUsernameExists(username);
@@ -61,10 +65,27 @@ const Register = () => {
       }
 
       setSuccess(true);
-      // Optionally, you can redirect the user or show a success message
+      toast({
+        title: "Registration successful",
+        description: "You can now log in with your new account.",
+        duration: 5000,
+      });
       setTimeout(() => navigate("/login"), 3000);
     } catch (error) {
-      setError(error.message);
+      console.error("Registration error:", error);
+      if (error.message === "Failed to fetch") {
+        setError("Unable to connect to the server. Please check your internet connection and try again.");
+      } else {
+        setError(error.message || "An unexpected error occurred. Please try again.");
+      }
+      toast({
+        title: "Registration failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,8 +144,8 @@ const Register = () => {
                 <AlertDescription>Registration successful! Redirecting to login...</AlertDescription>
               </Alert>
             )}
-            <Button type="submit" className="w-full mt-4">
-              Register
+            <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+              {isLoading ? "Registering..." : "Register"}
             </Button>
           </form>
         </CardContent>
